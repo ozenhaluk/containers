@@ -41,8 +41,8 @@ run_model() {
   local port=$2
 
   # Run the ollama model and wait for it to be ready
-  ollama pull $model_name > ollama_pull_$model_name.log 2>&1 &
-  wait_for_log "ollama_pull_$model_name.log" "success" 300
+  ollama pull $model_name > .log/ollama_pull_$model_name.log 2>&1 &
+  wait_for_log ".log/ollama_pull_$model_name.log" "success" 300
 
   # Start the litellm model and wait for it to be ready
   litellm --host 0.0.0.0 --port $port --model ollama/$model_name --add_function_to_prompt --debug > .log/litellm_$model_name.log 2>&1 &
