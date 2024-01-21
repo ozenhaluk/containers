@@ -96,6 +96,9 @@ start_jupyter
 export_env_vars
 
 execute_script "/post_start.sh" "Running post-start script..."
+# Pan's Studio - Add ollama runner script 
+echo "Running run_ollama.sh script..."
+bash /workspace/run_ollama.sh mistral:7b-instruct 3500 codellama:13b 3501 llama2:13b 3502
 
 echo "Start script(s) finished, pod is ready to use."
 
