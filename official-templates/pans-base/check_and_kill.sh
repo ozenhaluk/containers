@@ -14,6 +14,10 @@ check_and_kill() {
         read -p "Do you want to kill these processes? (y/n) " choice
         if [ "$choice" = "y" ]; then
             echo "Killing processes on port $port"
+            # For other ports, use kill command
+            if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+                sudo kill -9 $pids
+            fi
             if [ "$port" -eq 11434 ]; then
                 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
                     # Use specific start/stop commands for Linux
@@ -25,12 +29,9 @@ check_and_kill() {
                     sudo launchctl stop ollama
                     sudo launchctl start ollama
                 fi
-            else
-                # For other ports, use kill command
-                if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ "$OSTYPE" == "darwin"* ]]; then
-                    sudo kill -9 $pids
-                fi
             fi
+             
+            
         else
             echo "Skipping port $port"
         fi
