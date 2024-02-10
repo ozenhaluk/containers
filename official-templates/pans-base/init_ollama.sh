@@ -5,7 +5,7 @@
 # It also downloads the check_and_kill.sh and run_ollama.sh scripts to the workspace directory
 # The check_and_kill.sh script is used to check if the port is in use and kill the process if it is
 # The run_ollama.sh script is used to run the Ollama container
-curl https://ollama.ai/install.sh | sh &&
+curl -fsSL https://ollama.com/install.sh | sh &&
 python3.10 -m pip install litellm litellm[proxy] &&
 pip install gradio_client==0.2.7 &&
 apt-get update &&
