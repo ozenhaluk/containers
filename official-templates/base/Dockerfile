@@ -7,6 +7,10 @@ ENV SHELL=/bin/bash
 ENV PYTHONUNBUFFERED=True
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Set the base release version
+ARG BASE_RELEASE_VERSION
+ENV BASE_RELEASE_VERSION=${BASE_RELEASE_VERSION}
+
 # Override the default huggingface cache directory.
 ENV HF_HOME="/runpod-volume/.cache/huggingface/"
 ENV HF_DATASETS_CACHE="/runpod-volume/.cache/huggingface/datasets/"
@@ -21,6 +25,7 @@ ENV HF_HUB_ENABLE_HF_TRANSFER="1"
 # Shared python package cache
 ENV VIRTUALENV_OVERRIDE_APP_DATA="/runpod-volume/.cache/virtualenv/"
 ENV PIP_CACHE_DIR="/runpod-volume/.cache/pip/"
+ENV UV_CACHE_DIR="/runpod-volume/.cache/uv/"
 
 # Set Default Python Version
 ENV PYTHON_VERSION="3.10"
@@ -39,7 +44,9 @@ RUN apt-get update --yes && \
     file \
     git \
     inotify-tools \
+    jq \
     libgl1 \
+    lsof \
     vim \
     nano \
     tmux \
@@ -147,11 +154,17 @@ RUN python3.7 -m pip install virtualenv && \
     python3.10 -m pip install virtualenv && \
     python3.11 -m pip install virtualenv
 
+# Install pip drop-in replacement uv (https://github.com/astral-sh/uv)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # Extras
 RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 RUN brew update && brew install pyenv
 RUN brew tap filebrowser/tap && brew install filebrowser
+
+# Temporary while bash path gets fixed https://github.com/astral-sh/uv/issues/1586
+RUN brew install uv
 
 # NGINX Proxy
 COPY --from=proxy nginx.conf /etc/nginx/nginx.conf
